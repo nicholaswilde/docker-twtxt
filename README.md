@@ -1,12 +1,12 @@
-# Docker Template
-[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/nicholaswilde/template)](https://hub.docker.com/r/nicholaswilde/template)
-[![Docker Pulls](https://img.shields.io/docker/pulls/nicholaswilde/template)](https://hub.docker.com/r/nicholaswilde/template)
-[![GitHub](https://img.shields.io/github/license/nicholaswilde/docker-template)](./LICENSE)
-[![ci](https://github.com/nicholaswilde/docker-template/workflows/ci/badge.svg)](https://github.com/nicholaswilde/docker-template/actions?query=workflow%3Aci)
-[![lint](https://github.com/nicholaswilde/docker-template/workflows/lint/badge.svg?branch=main)](https://github.com/nicholaswilde/docker-template/actions?query=workflow%3Alint)
+# Docker twtxt
+[![Docker Image Version (latest by date)](https://img.shields.io/docker/v/nicholaswilde/twtxt)](https://hub.docker.com/r/nicholaswilde/twtxt)
+[![Docker Pulls](https://img.shields.io/docker/pulls/nicholaswilde/twtxt)](https://hub.docker.com/r/nicholaswilde/twtxt)
+[![GitHub](https://img.shields.io/github/license/nicholaswilde/docker-twtxt)](./LICENSE)
+[![ci](https://github.com/nicholaswilde/docker-twtxt/workflows/ci/badge.svg)](https://github.com/nicholaswilde/docker-twtxt/actions?query=workflow%3Aci)
+[![lint](https://github.com/nicholaswilde/docker-twtxt/workflows/lint/badge.svg?branch=main)](https://github.com/nicholaswilde/docker-twtxt/actions?query=workflow%3Alint)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
-A multi-architecture image for [template](https://github.com/nicholaswilde/docker-template).
+A multi-architecture image for [twtxt](https://github.com/nicholaswilde/docker-twtxt).
 
 ## Architectures
 
@@ -23,13 +23,16 @@ A multi-architecture image for [template](https://github.com/nicholaswilde/docke
 
 ```bash
 $ docker run -d \
-  --name=template-default \
+  --name=twtxt-default \
   -e TZ=America/Los_Angeles `# optional` \
-  -e PUID=1000  `# optional` \
-  -e PGID=1000   `# optional` \
-  -p 3000:3000 \
+  -e PUID=1000    `# optional` \
+  -e PGID=1000    `# optional` \
+  -e OPEN_PROFILES=true \
+  -e OPEN_REGISTRATIONS=true \
+  -e COOKIE_SECRET=supersecretchangeme \
+  -p 8000:8000 \
   --restart unless-stopped \
-  nicholaswilde/template
+  nicholaswilde/twtxt
 ```
 
 ### docker-compose
@@ -41,6 +44,8 @@ See [docker-compose.yaml](./docker-compose.yaml).
 |user | uid |
 |----:|:---:|
 | abc | 911 |
+
+See [twtxt](https://github.com/prologic/twtxt#usage) for more options.
 
 ## Development
 

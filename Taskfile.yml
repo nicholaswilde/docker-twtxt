@@ -45,10 +45,27 @@ tasks:
       - chk:_release
       - chk:_source
 
+  init:
+    desc: Update the task.env by replacing template with the image name.
+    cmds:
+      - "sed -i 's/template/{{ .IMAGE }}/g' task.env"
+    deps:
+      - _check-image
+
+  _check-image:
+    cmds:
+      - test ! -z "{{.IMAGE}}" || (echo "Please define IMAGE parameter"; exit 1)
+    silent: true
+
   date:
     desc: Get the date of the image
     cmds:
       - "{{ .RUN }} --entrypoint date {{ .TAG_VERSION }}"
+
+  doc-comp:
+    desc: Update the docker-compose.yaml by replacing template with the image name.
+    cmds:
+      - "sed -i 's/template/{{ .IMAGE_NAME }}/g' docker-compose.yaml"
 
   lint:
     desc: Lint the repoistory
@@ -101,6 +118,7 @@ tasks:
     desc: Update the README.md by replacing template with the image name.
     cmds:
       - "sed -i 's/template/{{ .IMAGE_NAME }}/g' README.md"
+      - "sed -i 's@dokcer-{{ .IMAGE_NAME }}/wiki@docker-template/wiki@g' README.md"
 
   run:
     desc: Run the image in the foreground
@@ -164,7 +182,7 @@ tasks:
       - 'printf "{{ .COLOR }}* VERSION\e[m            %s\n" "{{ .VERSION }}"'
     vars:
       # Blue
-      COLOR: '\e[1;34m' 
+      COLOR: '\e[1;34m'
     silent: true
 
   default:

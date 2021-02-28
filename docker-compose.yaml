@@ -1,17 +1,23 @@
 ---
 version: "2.1"
+
 services:
-  template:
-    image: nicholaswilde/template:latest
-    container_name: template-default
+  twtxt:
+    image: nicholaswilde/twtxt:latest
+    container_name: twtxt-default
+    environment:
+      - TZ=America/Los_Angeles `# optional` \
+      - PUID=1000    `# optional` \
+      - PGID=1000    `# optional` \
+      - OPEN_PROFILES=true
+      - OPEN_REGISTRATIONS=true
+      - COOKIE_SECRET=supersecretchangeme
     ports:
-      - 3000:3000
+      - 8000:8000
     restart: unless-stopped
     volumes:
-      - app:/app
+      - data:/data
       - config:/config
-      - defaults:/defaults
 volumes:
-  app:
+  data:
   config:
-  defaults:

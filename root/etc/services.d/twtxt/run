@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv bash
+
+cd /app || exit
+
+exec \
+	s6-setuidgid abc /app/twtd \
+	  -d /config \
+    -s bitcask:///data/twtxt.db \
+    -u http://127.0.0.1:8000
