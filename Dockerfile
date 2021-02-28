@@ -1,6 +1,6 @@
 FROM golang:1.14.15-alpine3.13 as dl
 ARG VERSION
-ARG CHECKSUM=5d1086199284204cfa6bf83885b6aaa583ace7c74cbf5354481d374362d93d70
+ARG CHECKSUM=ac276f06e0b3d783f5b2f2b12e100b2e1b9e17106f204bba9cfb61b9ef855e4c
 ARG FILENAME="${VERSION}.tar.gz"
 WORKDIR /tmp
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
@@ -14,7 +14,7 @@ RUN \
     ffmpeg-dev=4.3.1-r3 && \
   echo "**** download twtxt ****" && \
   mkdir /app && \
-  wget "https://github.com/prologic/twtxt/archive/${FILENAME}" && \
+  wget "https://github.com/jointwt/twtxt/archive/${FILENAME}" && \
   echo "${CHECKSUM}  ${FILENAME}" | sha256sum -c && \
   tar -xvf "${FILENAME}" -C /app --strip-components 1
 WORKDIR /app
@@ -23,7 +23,7 @@ RUN \
   make deps && \
   go mod download && \
   make server \
-    VERSION="0.0.0" \
+    VERSION="${VERSION}" \
     COMMIT="HEAD"
 
 FROM ghcr.io/linuxserver/baseimage-alpine:3.13
