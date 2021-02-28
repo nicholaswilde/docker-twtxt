@@ -6,7 +6,7 @@
 [![lint](https://github.com/nicholaswilde/docker-twtxt/workflows/lint/badge.svg?branch=main)](https://github.com/nicholaswilde/docker-twtxt/actions?query=workflow%3Alint)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
-A multi-architecture image for [twtxt](https://github.com/nicholaswilde/docker-twtxt).
+A multi-architecture image for [twtxt](https://github.com/jointwt/twtxt).
 
 ## Architectures
 
