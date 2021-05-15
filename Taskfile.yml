@@ -4,6 +4,12 @@ version: '3'
 dotenv: ['task.env']
 
 vars:
+  VERSION:
+    sh: cat VERSION
+  CHECKSUM:
+    sh: cat CHECKSUM
+  LS:
+    sh: cat LS
   BUILD_DATE:
     sh: "date -u +%Y-%m-%dT%H%M%S%Z"
   BUILD_ARGS: >-
@@ -14,8 +20,11 @@ vars:
   TAG_LATEST: "{{ .NS }}/{{ .IMAGE_NAME }}:latest"
   CONTAINER: "{{ .CONTAINER_NAME }}-{{ .CONTAINER_INSTANCE }}"
   RUN: "docker run -it --rm --name {{ .CONTAINER_NAME }}-{{ .CONTAINER_INSTANCE }} {{ .ENV }} {{ .PORTS }}"
+  DGOSS_RUN: "dgoss run -it --rm --name {{ .CONTAINER_NAME }}-{{ .CONTAINER_INSTANCE }} {{ .ENV }} {{ .PORTS }}"
+  DGOSS_EDIT: "dgoss edit -it --rm --name {{ .CONTAINER_NAME }}-{{ .CONTAINER_INSTANCE }} {{ .ENV }} {{ .PORTS }}"
   EXEC: "docker exec -it {{ .CONTAINER }}"
   BUILD: "docker buildx build {{ .BUILD_ARGS }} -t"
+  API_URL: "https://api.github.com/repos/{{ .SOURCE_ORG }}/{{ .SOURCE_REPO }}/tags"
 
 includes:
   build: ./.taskfiles/build.yaml
@@ -23,12 +32,15 @@ includes:
   chk: ./.taskfiles/chk.yaml
   date: ./.taskfiles/date.yaml
   deps: ./.taskfiles/deps.yaml
+  goss: ./.taskfiles/goss.yaml
   image: ./.taskfiles/image.yaml
   load: ./.taskfiles/load.yaml
+  ls: ./.taskfiles/ls.yaml
   pkgs: ./.taskfiles/pkgs.yaml
   run: ./.taskfiles/run.yaml
   shell: ./.taskfiles/shell.yaml
   snyk: ./.taskfiles/snyk.yaml
+  version: ./.taskfiles/version.yaml
 
 tasks:
   build:
@@ -38,34 +50,10 @@ tasks:
     deps:
       - build:build-deps
 
-  checksum:
-    desc: Get the checksum of the release or source package.
-    deps:
-      - chk:_varcheck
-      - chk:_release
-      - chk:_source
-
-  init:
-    desc: Update the task.env by replacing template with the image name.
-    cmds:
-      - "sed -i 's/template/{{ .IMAGE }}/g' task.env"
-    deps:
-      - _check-image
-
-  _check-image:
-    cmds:
-      - test ! -z "{{.IMAGE}}" || (echo "Please define IMAGE parameter"; exit 1)
-    silent: true
-
   date:
     desc: Get the date of the image
     cmds:
       - "{{ .RUN }} --entrypoint date {{ .TAG_VERSION }}"
-
-  doc-comp:
-    desc: Update the docker-compose.yaml by replacing template with the image name.
-    cmds:
-      - "sed -i 's/template/{{ .IMAGE_NAME }}/g' docker-compose.yaml"
 
   lint:
     desc: Lint the repoistory
@@ -118,12 +106,18 @@ tasks:
     desc: Update the README.md by replacing template with the image name.
     cmds:
       - "sed -i 's/template/{{ .IMAGE_NAME }}/g' README.md"
-      - "sed -i 's@dokcer-{{ .IMAGE_NAME }}/wiki@docker-template/wiki@g' README.md"
+
+  rm:
+    desc: Remove the image
+    cmds:
+      - "docker rmi -f {{ .TAG_VERSION }}"
 
   run:
     desc: Run the image in the foreground
     cmds:
       - "{{ .RUN }} {{ .TAG_VERSION }}"
+    preconditions:
+      - docker images -q {{ .TAG_VERSION }} 2> /dev/null
 
   rund:
     desc: Run the image in the background
@@ -145,7 +139,9 @@ tasks:
   shell:
     desc: Run a shell of an image
     cmds:
-      - "{{ .RUN }} --entrypoint /bin/sh -u 0 {{ .TAG_VERSION }}"
+      - "{{ .RUN }} --entrypoint /bin/sh -u {{ .U }} {{ .TAG_VERSION }}"
+    vars:
+      U: '{{ default "0" .U }}'
 
   stop:
     desc: Stop a running container
@@ -156,6 +152,8 @@ tasks:
     desc: Run docker-compose up
     cmds:
       - docker-compose -f docker-compose.yaml up
+    deps:
+      - load:latest
 
   vars:
     desc: Print all the variables

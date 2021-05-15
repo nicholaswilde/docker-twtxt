@@ -1,0 +1,14 @@
+---
+port:
+  tcp6:8000:
+    listening: true
+
+process:
+  twtd:
+    running: true
+
+http:
+  http://localhost:8000:
+    status: 200
+    body:
+      - <title>twtxt.net Local timeline</title>

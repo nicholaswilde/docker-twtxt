@@ -1,6 +1,6 @@
 FROM golang:1.14.15-alpine3.13 as dl
 ARG VERSION
-ARG CHECKSUM=ac276f06e0b3d783f5b2f2b12e100b2e1b9e17106f204bba9cfb61b9ef855e4c
+ARG CHECKSUM
 ARG FILENAME="${VERSION}.tar.gz"
 WORKDIR /tmp
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
@@ -9,12 +9,12 @@ RUN \
   apk add --no-cache \
     wget=1.21.1-r1 \
     build-base=0.5-r2 \
-    git=2.30.1-r0 \
+    git=2.30.2-r0 \
     make=4.3-r0 \
     ffmpeg-dev=4.3.1-r3 && \
   echo "**** download twtxt ****" && \
   mkdir /app && \
-  wget "https://github.com/jointwt/twtxt/archive/${FILENAME}" && \
+  wget -q "https://github.com/prologic/twtxt/archive/refs/tags/${FILENAME}" && \
   echo "${CHECKSUM}  ${FILENAME}" | sha256sum -c && \
   tar -xvf "${FILENAME}" -C /app --strip-components 1
 WORKDIR /app
@@ -29,6 +29,7 @@ RUN \
 FROM ghcr.io/linuxserver/baseimage-alpine:3.13
 ARG BUILD_DATE
 ARG VERSION
+# hadolint ignore=DL3048
 LABEL build_version="Version:- ${VERSION} Build-date:- ${BUILD_DATE}"
 LABEL maintainer="nicholaswilde"
 ENV GODEBUG=netdns=cgo
