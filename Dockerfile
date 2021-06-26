@@ -1,4 +1,4 @@
-FROM golang:1.14.15-alpine3.13 as dl
+FROM golang:1.16.5-alpine3.14 as dl
 ARG VERSION
 ARG CHECKSUM
 ARG FILENAME="${VERSION}.tar.gz"
@@ -9,9 +9,9 @@ RUN \
   apk add --no-cache \
     wget=1.21.1-r1 \
     build-base=0.5-r2 \
-    git=2.30.2-r0 \
+    git=2.32.0-r0 \
     make=4.3-r0 \
-    ffmpeg-dev=4.3.1-r3 && \
+    ffmpeg-dev=4.4-r1 && \
   echo "**** download twtxt ****" && \
   mkdir /app && \
   wget -q "https://github.com/prologic/twtxt/archive/refs/tags/${FILENAME}" && \
@@ -26,7 +26,7 @@ RUN \
     VERSION="${VERSION}" \
     COMMIT="HEAD"
 
-FROM ghcr.io/linuxserver/baseimage-alpine:3.13
+FROM ghcr.io/linuxserver/baseimage-alpine:3.14
 ARG BUILD_DATE
 ARG VERSION
 # hadolint ignore=DL3048
@@ -36,7 +36,7 @@ ENV GODEBUG=netdns=cgo
 RUN \
   echo "**** install packages ****" && \
   apk add --no-cache \
-    ffmpeg=4.3.1-r3 \
+    ffmpeg=4.4-r1 \
     ca-certificates=20191127-r5 && \
   mkdir /data && \
   mkdir -p /config/feeds && \
